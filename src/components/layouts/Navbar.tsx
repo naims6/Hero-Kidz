@@ -18,7 +18,6 @@ const Navbar = () => {
       <li>
         <NavLink href={"/contact"}>Contact</NavLink>
       </li>
-      
     </>
   );
   return (
@@ -46,7 +45,7 @@ const Navbar = () => {
             tabIndex={-1}
             className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
           >
-           {nav}
+            {nav}
           </ul>
         </div>
         <Logo />
@@ -55,8 +54,12 @@ const Navbar = () => {
         <ul className="menu menu-horizontal px-1">{nav}</ul>
       </div>
       <div className="navbar-end space-x-4">
-       <Link href={"/cart"} className="btn btn-primary"><CiShoppingCart size={24}/></Link> 
-       <Link href={"/login"} className="btn btn-primary btn-outline">Login</Link>
+        <Link href={"/cart"} className="btn btn-primary">
+          <CiShoppingCart size={24} />
+        </Link>
+        <Link href={"/login"} className="btn btn-primary btn-outline">
+          Login
+        </Link>
       </div>
     </div>
   );
