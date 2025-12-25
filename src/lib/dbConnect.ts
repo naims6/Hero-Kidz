@@ -5,7 +5,7 @@ const dbName = process.env.DBNAME
 if (!uri) throw new Error("MONGODB_URI missing");
 if (!dbName) throw new Error("DBNAME missing");
 
-const collestions = {
+export const collections = {
     PRODUCTS: "products",
 }
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version

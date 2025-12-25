@@ -12,7 +12,6 @@ const NavLink = ({
   children: React.ReactNode;
 }) => {
   const path = usePathname();
-  console.log(path);
   return (
     <Link
       className={`${path.startsWith(href) && "text-primary font-bold"}`}

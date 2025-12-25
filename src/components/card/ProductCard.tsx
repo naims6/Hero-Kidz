@@ -6,9 +6,12 @@ import {
   FaRegStar,
   FaShoppingCart,
 } from "react-icons/fa";
+import { CiViewTimeline } from "react-icons/ci";
+import Link from "next/link";
 
 interface ProductProps {
   product: {
+    _id: string,
     title: string;
     bangla: string;
     image: string;
@@ -24,7 +27,7 @@ interface ProductProps {
 }
 
 const ProductCard = ({ product }: ProductProps) => {
-  const { title, image, price, discount=0, ratings, reviews, sold } = product;
+  const { title, image, price, discount=0, ratings, reviews, sold, _id = undefined } = product;
 
   // Calculate discounted price
   const discountedPrice = price - (price * discount) / 100;
@@ -98,6 +101,10 @@ const ProductCard = ({ product }: ProductProps) => {
             <FaShoppingCart />
             Add to Cart
           </button>
+          <Link href={`/products/${_id}`} className="btn btn-primary w-full gap-2 text-white">
+            <CiViewTimeline />
+            View Details
+          </Link>
         </div>
       </div>
     </div>
