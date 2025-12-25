@@ -3,6 +3,11 @@ import { Poppins } from "next/font/google";
 import "./globals.css";
 import Navbar from "../components/layouts/Navbar";
 import Footer from "../components/layouts/Footer";
+import localFont from "next/font/local";
+
+export const mayabotiFont = localFont({
+  src: "../fonts/mayaboti-normal.ttf",
+});
 
 const poppins = Poppins({
   weight: ["100", "200", "400", "500", "600", "800"],
