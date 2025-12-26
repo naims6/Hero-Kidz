@@ -1,5 +1,6 @@
 "use client";
 
+import { useSession } from "next-auth/react";
 import { usePathname, useRouter } from "next/navigation";
 import React from "react";
 import { FaShoppingCart } from "react-icons/fa";
@@ -22,9 +23,10 @@ interface ProductProps {
 }
 
 const CartButton = ({product} : ProductProps) => {
-    const isLogin = false
-    const router = useRouter()
-    const path = usePathname()
+  const session = useSession()
+  const router = useRouter()
+  const path = usePathname()
+  const isLogin = session?.status == "authenticated";
 
     const add2Cart = () => {
         if(isLogin) {

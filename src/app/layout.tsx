@@ -63,9 +63,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <NextAuthProvider>
-      <html lang="en">
+    <html lang="en">
         <body className={`${poppins.className} antialiased`}>
+        <NextAuthProvider>
           <header className="max-w-11/12 mx-auto py-2">
             <Navbar />
           </header>
@@ -75,9 +75,9 @@ export default function RootLayout({
           <footer>
             <Footer />
           </footer>
-        </body>
         <Toaster/>
-      </html>
     </NextAuthProvider>
+        </body>
+      </html>
   );
 }

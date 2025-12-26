@@ -4,15 +4,16 @@ import Link from "next/link";
 import SocialButton from "@/components/auth/SocialButton";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 
 const LoginForm = () => {
-  const router = useRouter();
+  const params = useSearchParams();
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
+  console.log("callback url: ", params.get("callbackUrl") || "/")
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -22,18 +23,19 @@ const LoginForm = () => {
     const result = await signIn("credentials", {
       email: form.email,
       password: form.password,
-      redirect: false,
+      // redirect: false,
+      callbackUrl: params.get("callbackUrl") || "/",
     });
 
     console.log("signin result: ", result);
     if (!result) return { error: "error occured" };
 
     if (result.error === "CredentialsSignin") {
-      toast.error("Password or Email is wrong")
+      toast.error("Password or Email is wrong");
     }
-      if (result.ok) {
-        router.push("/");
-      }
+    if (result.ok) {
+      toast.success("Login succesful");
+    }
   };
   return (
     <div className="min-h-screen flex items-center justify-center bg-base-200 px-4">
