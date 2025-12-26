@@ -1,4 +1,5 @@
 import { getSingleProducts } from "@/actions/server/product";
+import type { Metadata } from "next";
 import Image from "next/image";
 
 import {
@@ -8,10 +9,50 @@ import {
   FaQuestionCircle,
 } from "react-icons/fa";
 
-const ProductDetails = async ({ params }: { params: Promise<{ id: string }> }) => {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
   const { id } = await params;
   const product = await getSingleProducts(id);
 
+  if(!product) {
+    return {title: "Product Not Found"}
+  }
+
+  return {
+    title: product.title,
+    description: product.description.slice(0, 160), // Google likes < 160 chars
+    openGraph: {
+      title: `${product.title} | Hero Kidz`,
+      description: product.description.slice(0, 160),
+      images: [
+        {
+          url: product.image,
+          width: 800,
+          height: 600,
+          alt: product.title,
+        },
+      ],
+      type: "article",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: product.title,
+      description: product.description.slice(0, 160),
+      images: [product.image],
+    },
+  };
+}
+
+const ProductDetails = async ({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) => {
+  const { id } = await params;
+  const product = await getSingleProducts(id);
 
   const discountedPrice =
     product.price - (product.price * product.discount) / 100;
