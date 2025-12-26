@@ -4,10 +4,10 @@ import {
   FaStar,
   FaStarHalfAlt,
   FaRegStar,
-  FaShoppingCart,
 } from "react-icons/fa";
 import { CiViewTimeline } from "react-icons/ci";
 import Link from "next/link";
+import CartButton from "../buttons/CartButton";
 
 interface ProductProps {
   product: {
@@ -97,10 +97,7 @@ const ProductCard = ({ product }: ProductProps) => {
 
         {/* Action Button */}
         <div className="card-actions mt-4">
-          <button className="btn btn-primary w-full gap-2 text-white">
-            <FaShoppingCart />
-            Add to Cart
-          </button>
+          <CartButton product={product}/>
           <Link href={`/products/${_id}`} className="btn btn-primary w-full gap-2 text-white">
             <CiViewTimeline />
             View Details

@@ -1,10 +1,10 @@
 import { getSingleProducts } from "@/actions/server/product";
+import CartButton from "@/components/buttons/CartButton";
 import type { Metadata } from "next";
 import Image from "next/image";
 
 import {
   FaStar,
-  FaShoppingCart,
   FaCheckCircle,
   FaQuestionCircle,
 } from "react-icons/fa";
@@ -53,9 +53,13 @@ const ProductDetails = async ({
 }) => {
   const { id } = await params;
   const product = await getSingleProducts(id);
+  const uiProduct = {
+  ...product,
+  _id: product._id.toString(),
+};
+const {price, discount, image, title, bangla, info} = uiProduct
 
-  const discountedPrice =
-    product.price - (product.price * product.discount) / 100;
+  const discountedPrice = (price - (price * discount) / 100);
 
   return (
     <div className="max-w-7xl mx-auto p-4 md:p-8 bg-base-100">
@@ -64,8 +68,8 @@ const ProductDetails = async ({
         <div className="space-y-4">
           <div className="rounded-3xl overflow-hidden bg-gray-50 border border-base-200">
             <Image
-              src={product.image}
-              alt={product.title}
+              src={image}
+              alt={title}
               width={600}
               height={420}
               className="w-full h-auto object-cover hover:scale-105 transition-transform duration-500"
@@ -77,7 +81,7 @@ const ProductDetails = async ({
               <Image
                 width={200}
                 height={150}
-                src={product.image}
+                src={image}
                 className="opacity-80"
                 alt="thumb"
               />
@@ -89,10 +93,10 @@ const ProductDetails = async ({
         <div className="flex flex-col">
           <div className="badge badge-outline mb-2">Educational Toys</div>
           <h1 className="text-3xl md:text-4xl font-bold text-base-content mb-2">
-            {product.title}
+            {title}
           </h1>
           <p className="text-xl text-primary font-medium mb-4">
-            {product.bangla}
+            {bangla}
           </p>
 
           <div className="flex items-center gap-4 mb-6">
@@ -115,13 +119,13 @@ const ProductDetails = async ({
               <span className="text-4xl font-black text-primary">
                 ৳{discountedPrice}
               </span>
-              {product.discount > 0 && (
+              {discount > 0 && (
                 <span className="text-xl text-gray-400 line-through">
-                  ৳{product.price}
+                  ৳{price}
                 </span>
               )}
               <span className="badge badge-secondary ml-2">
-                SAVE {product.discount}%
+                SAVE {discount}%
               </span>
             </div>
           </div>
@@ -129,7 +133,7 @@ const ProductDetails = async ({
           <div className="space-y-4 mb-8">
             <h3 className="font-bold text-lg">Key Features:</h3>
             <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              {product.info.map((item: string, index: number) => (
+              {info.map((item: string, index: number) => (
                 <li key={index} className="flex items-center gap-2 text-sm">
                   <FaCheckCircle className="text-success" /> {item}
                 </li>
@@ -137,9 +141,7 @@ const ProductDetails = async ({
             </ul>
           </div>
 
-          <button className="btn btn-primary btn-lg w-full md:w-max px-12 gap-3 shadow-lg">
-            <FaShoppingCart /> Add to Cart
-          </button>
+          <CartButton product={uiProduct}/>
         </div>
       </div>
 
