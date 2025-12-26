@@ -2,15 +2,46 @@
 import { FaEnvelope, FaLock } from "react-icons/fa";
 import Link from "next/link";
 import SocialButton from "@/components/auth/SocialButton";
+import { ChangeEvent, FormEvent, useState } from "react";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 const LoginForm = () => {
+  const router = useRouter();
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+  });
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const result = await signIn("credentials", {
+      email: form.email,
+      password: form.password,
+      redirect: false,
+    });
+
+    console.log("signin result: ", result);
+    if (!result) return { error: "error occured" };
+
+    if (result.error === "CredentialsSignin") {
+      toast.error("Password or Email is wrong")
+    }
+      if (result.ok) {
+        router.push("/");
+      }
+  };
   return (
     <div className="min-h-screen flex items-center justify-center bg-base-200 px-4">
       <div className="card w-full max-w-md bg-base-100 shadow-2xl">
         <div className="card-body">
           <h2 className="text-center text-3xl font-bold mb-6">Welcome Back</h2>
 
-          <form className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             {/* Email Input */}
             <div className="form-control">
               <label className="label">
@@ -19,6 +50,8 @@ const LoginForm = () => {
               <div className="input w-full input-bordered flex items-center gap-3">
                 <FaEnvelope className="text-gray-400" />
                 <input
+                  onChange={(e) => handleChange(e)}
+                  name="email"
                   type="email"
                   placeholder="email@example.com"
                   className="grow"
@@ -35,6 +68,8 @@ const LoginForm = () => {
               <div className="input w-full input-bordered flex items-center gap-3">
                 <FaLock className="text-gray-400" />
                 <input
+                  onChange={(e) => handleChange(e)}
+                  name="password"
                   type="password"
                   placeholder="••••••••"
                   className="grow"

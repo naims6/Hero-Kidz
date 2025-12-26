@@ -2,6 +2,7 @@ import Link from "next/link";
 import NavLink from "../buttons/NavLink";
 import Logo from "./Logo";
 import { CiShoppingCart } from "react-icons/ci";
+import AuthButtons from "../buttons/AuthButtons";
 
 const Navbar = () => {
   const nav = (
@@ -57,9 +58,7 @@ const Navbar = () => {
         <Link href={"/cart"} className="btn btn-primary">
           <CiShoppingCart size={24} />
         </Link>
-        <Link href={"/login"} className="btn btn-primary btn-outline">
-          Login
-        </Link>
+       <AuthButtons />
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
-"use server"
+"use server";
 import { collections, dbConnect } from "@/lib/dbConnect";
 import bcrypt from "bcryptjs";
+
 
 interface User {
   name: string;
@@ -8,9 +9,14 @@ interface User {
   password: string;
 }
 
+interface LoginPayload {
+  email?: string;
+  password?: string;
+}
+
 export const postUser = async (payload: User) => {
   const { email, password, name } = payload;
-console.log(payload)
+
   // check user is already exist or not
   const isExist = await dbConnect(collections.USERS).findOne({ email });
   if (isExist) {
@@ -30,7 +36,28 @@ console.log(payload)
   const result = await dbConnect(collections.USERS).insertOne(newUser);
 
   if (result.acknowledged) {
-    return {...result, insertedId: result.insertedId.toString()
-    }
+    return { ...result, insertedId: result.insertedId.toString() };
+  }
+};
+
+
+export const loginUser = async (payload: LoginPayload) => {
+  const { email, password } = payload;
+
+  if (!email || !password) {
+    return { error: "Missing email or password" };
+  }
+
+  const user = await dbConnect(collections.USERS).findOne({ email });
+  if (!user) {
+    return { error: "User is not exist" };
+  }
+  console.log("user is" ,user)
+  const isMatched = await bcrypt.compare(password, user.password);
+
+  if (isMatched) {
+    return user;
+  } else {
+    return { error: "Wrong credential" };
   }
 };
