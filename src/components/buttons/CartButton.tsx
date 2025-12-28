@@ -1,8 +1,10 @@
 "use client";
 
+import { handleCart } from "@/actions/server/cart";
 import { useSession } from "next-auth/react";
 import { usePathname, useRouter } from "next/navigation";
-import React from "react";
+import { useState } from "react";
+import toast from "react-hot-toast";
 import { FaShoppingCart } from "react-icons/fa";
 
 interface ProductProps {
@@ -12,7 +14,7 @@ interface ProductProps {
     bangla: string;
     image: string;
     price: number;
-    discount?: number; 
+    discount?: number;
     ratings: number;
     reviews: number;
     sold: number;
@@ -22,21 +24,33 @@ interface ProductProps {
   };
 }
 
-const CartButton = ({product} : ProductProps) => {
-  const session = useSession()
-  const router = useRouter()
-  const path = usePathname()
+const CartButton = ({ product }: ProductProps) => {
+  const session = useSession();
+  const [ loading, setLoading ] = useState(false);
+
+  const router = useRouter();
+  const path = usePathname();
   const isLogin = session?.status == "authenticated";
 
-    const add2Cart = () => {
-        if(isLogin) {
-            alert(product._id)
-        } else {
-            router.push(`/login?callbackUrl=${path}`)
-        }
+  const add2Cart = async () => {
+    setLoading(true);
+    if (isLogin) {
+      const result = await handleCart({ product, inc: true });
+      if (result.success) {
+        toast.success(`${product.title} added succesfulsly`);
+        setLoading(false);
+      }
+    } else {
+      router.push(`/login?callbackUrl=${path}`);
+      setLoading(false);
     }
+  };
   return (
-    <button onClick={add2Cart} className="btn btn-primary w-full gap-2 text-white">
+    <button
+      disabled={session.status == "loading" || loading}
+      onClick={add2Cart}
+      className="btn btn-primary w-full gap-2 text-white"
+    >
       <FaShoppingCart />
       Add to Cart
     </button>
