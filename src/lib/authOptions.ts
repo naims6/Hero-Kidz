@@ -1,12 +1,14 @@
 import { loginUser } from "@/actions/server/auth";
+import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
+import { collections, dbConnect } from "./dbConnect";
 
 if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
   throw new Error("Missing Google OAuth env vars");
 }
 
-export const authOptions = {
+export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -15,7 +17,7 @@ export const authOptions = {
         password: { label: "Password", type: "password" },
       },
 
-      async authorize(credentials, req) {
+      async authorize(credentials) {
         if (!credentials) {
           return null;
         }
@@ -33,4 +35,27 @@ export const authOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
   ],
+
+  callbacks: {
+  async signIn({ user, account, credentials }) {
+    console.log("from sign in callback",{user, account, credentials})
+    // is user already exist 
+    const isExist = await dbConnect(collections.USERS).findOne({email: user.email})
+    if(isExist) {
+      return true
+    }
+    // create user
+      const newUser = {
+        provider: account?.provider,
+        name:user.name,
+        image: user.image,
+        email:user.email,
+        role: "user",
+      };
+
+      const result = await dbConnect(collections.USERS).insertOne(newUser)
+
+    return result.acknowledged
+  },
+}
 };

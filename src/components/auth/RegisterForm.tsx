@@ -22,16 +22,16 @@ const RegisterForm = () => {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const result = await postUser(form);
-if(!result) {
-  alert("Something went wrong")
-  return 
-}
+    if (!result) {
+      alert("Something went wrong");
+      return;
+    }
     if ("error" in result) {
       return { message: "Error occured" };
     } else if (result.acknowledged) {
       alert("succesfully. please login");
-      router.push("/login");
-    } 
+      router.push("/");
+    }
   };
 
   return (

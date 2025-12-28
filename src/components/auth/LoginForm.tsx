@@ -4,27 +4,30 @@ import Link from "next/link";
 import SocialButton from "@/components/auth/SocialButton";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { signIn } from "next-auth/react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 
 const LoginForm = () => {
+  const router = useRouter();
   const params = useSearchParams();
+  const callbackUrl = params.get("callbackUrl") || "/";
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
-  console.log("callback url: ", params.get("callbackUrl") || "/")
+
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const result = await signIn("credentials", {
       email: form.email,
       password: form.password,
-      // redirect: false,
-      callbackUrl: params.get("callbackUrl") || "/",
+      redirect: false,
+      callbackUrl: callbackUrl,
     });
 
     console.log("signin result: ", result);
@@ -34,6 +37,7 @@ const LoginForm = () => {
       toast.error("Password or Email is wrong");
     }
     if (result.ok) {
+      router.push(callbackUrl);
       toast.success("Login succesful");
     }
   };
@@ -103,7 +107,10 @@ const LoginForm = () => {
 
           <p className="text-center mt-6 text-sm">
             Don&apos;t have an account?
-            <Link href="/register" className="link link-primary font-bold ml-1">
+            <Link
+              href={`/register?callbackUrl=${callbackUrl}`}
+              className="link link-primary font-bold ml-1"
+            >
               Register
             </Link>
           </p>
