@@ -37,25 +37,53 @@ export const authOptions: NextAuthOptions = {
   ],
 
   callbacks: {
-  async signIn({ user, account, credentials }) {
-    console.log("from sign in callback",{user, account, credentials})
-    // is user already exist 
-    const isExist = await dbConnect(collections.USERS).findOne({email: user.email})
-    if(isExist) {
-      return true
-    }
-    // create user
+    async signIn({ user, account }) {
+      // is user already exist
+      const isExist = await dbConnect(collections.USERS).findOne({
+        email: user.email,
+      });
+      if (isExist) {
+        return true;
+      }
+      // create user
       const newUser = {
         provider: account?.provider,
-        name:user.name,
+        name: user.name,
         image: user.image,
-        email:user.email,
+        email: user.email,
         role: "user",
       };
 
-      const result = await dbConnect(collections.USERS).insertOne(newUser)
+      const result = await dbConnect(collections.USERS).insertOne(newUser);
 
-    return result.acknowledged
+      return result.acknowledged;
+    },
+
+    async session({ session, token }) {
+      if (token) {
+        session.user.role = token?.role;
+        session.user.email = token?.email;
+      }
+      return session;
+    },
+
+    async jwt({ token, user, account }) {
+      if (!account) return token;
+
+      if (user) {
+        if (account.provider == "google") {
+          const dbUser = await dbConnect(collections.USERS).findOne({
+            email: user.email,
+          });
+          console.log("db user:", dbUser);
+          token.role = dbUser?.role;
+          token.email = dbUser?.email ?? undefined;
+        } else {
+          token.role = user?.role;
+          token.email = user?.email ?? undefined;
+        }
+      }
+      return token;
+    },
   },
-}
 };

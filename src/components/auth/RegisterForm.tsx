@@ -4,11 +4,13 @@ import React, { ChangeEvent, FormEvent, useState } from "react";
 import { FaUser, FaEnvelope, FaLock } from "react-icons/fa";
 import Link from "next/link";
 import SocialButton from "@/components/auth/SocialButton";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { postUser } from "@/actions/server/auth";
 
 const RegisterForm = () => {
+  const params = useSearchParams();
   const router = useRouter();
+  const callbackUrl = params.get("callbackUrl") || "/";
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -30,7 +32,7 @@ const RegisterForm = () => {
       return { message: "Error occured" };
     } else if (result.acknowledged) {
       alert("succesfully. please login");
-      router.push("/");
+      router.push(callbackUrl);
     }
   };
 
