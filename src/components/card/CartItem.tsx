@@ -1,18 +1,34 @@
 "use client";
+import { deleteItemsFromCart } from "@/actions/server/cart";
 import { CartItemType } from "@/types/CartItemType";
 import Image from "next/image";
 import React from "react";
 import { FaTrashAlt, FaPlus, FaMinus } from "react-icons/fa";
 
-const CartItem = ({ item }: { item: CartItemType }) => {
+interface CartItemProps {
+  item: CartItemType;
+  removeItem: (id: string) => void;
+}
+
+
+
+const CartItem = ({ item, removeItem }: CartItemProps ) => {
   console.log("ITEM", item);
   // --- Handlers ---
   const updateQuantity = () => {
     console.log("updating...");
   };
 
-  const removeItem = () => {
-    alert("removing...");
+  const handleDeleteCart = async() => {
+    const result = confirm("Are you sure?");
+    if (result) {
+      const deleted = await deleteItemsFromCart(item._id);
+      if (deleted.success) {
+        removeItem(item._id);
+      }
+    } else {
+      alert("user cliked cancel");
+    }
   };
 
   return (
@@ -34,7 +50,7 @@ const CartItem = ({ item }: { item: CartItemType }) => {
             <p className="text-sm text-gray-500 font-mono">{item.productId}</p>
           </div>
           <button
-            onClick={() => removeItem()}
+            onClick={() => handleDeleteCart()}
             className="btn btn-ghost btn-circle btn-sm text-error"
           >
             <FaTrashAlt />

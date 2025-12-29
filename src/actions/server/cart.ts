@@ -3,7 +3,10 @@
 import { authOptions } from "@/lib/authOptions";
 import { collections, dbConnect } from "@/lib/dbConnect";
 import { CartMongoType } from "@/types/CartMongoType";
+import { ObjectId } from "mongodb";
 import { getServerSession } from "next-auth";
+import { revalidatePath } from "next/cache";
+import { cache } from "react";
 
 const cartCollection = dbConnect(collections.CART);
 
@@ -61,7 +64,7 @@ export const handleCart = async ({ product, inc = true }: ProductProps) => {
   }
 };
 
-export const getCart = async () => {
+export const getCart = cache(async () => {
   const session = await getServerSession(authOptions);
   if (!session?.user) {
     throw new Error("Unauthorized");
@@ -71,4 +74,23 @@ export const getCart = async () => {
   const query = { email: user?.email };
   const result = await cartCollection.find<CartMongoType>(query).toArray();
   return result;
+});
+
+export const deleteItemsFromCart = async (id: string):Promise<{ success: boolean; }> => {
+  const session = await getServerSession(authOptions);
+  if (!session?.user) {
+    throw new Error("Unauthorized");
+  }
+  const user = session.user;
+  console.log("USER FROM Delete cart", user);
+  const query = { _id: new ObjectId(id), email: user.email };
+
+  const result = await cartCollection.deleteOne(query);
+  // if (!!result.deletedCount) {
+  //   revalidatePath("/cart");
+  // }
+
+  return { success: !!result.deletedCount };
 };
+
+
