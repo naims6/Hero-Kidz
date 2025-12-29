@@ -137,3 +137,15 @@ export const decreaseCartItemDb = async (
   const result = await cartCollection.updateOne(query, updatedData);
   return { success: !!result.modifiedCount };
 };
+
+export const clearCart = async () => {
+  const session = await getServerSession(authOptions);
+  if (!session?.user) {
+    throw new Error("Unauthorized");
+  }
+  const user = session.user;
+
+  const query = { email: user?.email };
+  const result = await cartCollection.deleteMany(query);
+  return { success: !!result.deletedCount };
+};

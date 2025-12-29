@@ -3,6 +3,7 @@ import { createOrder } from "@/actions/server/order";
 import { CartItemType } from "@/types/CartItemType";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { ChangeEvent, FormEvent, useState } from "react";
 import toast from "react-hot-toast";
 import {
@@ -19,6 +20,7 @@ interface CheckoutProps {
 
 const Checkout = ({ cartItems }: CheckoutProps) => {
   const { data } = useSession();
+  const router = useRouter();
   console.log(data);
   console.log("checkout cartitems length:", cartItems.length);
   const [form, setForm] = useState({
@@ -60,7 +62,10 @@ const Checkout = ({ cartItems }: CheckoutProps) => {
     e.preventDefault();
     const result = await createOrder(form);
     if (result.success) {
-      toast("Order confirmed");
+      toast.success("Order confirmed");
+      router.push("/checkout/success");
+    } else {
+      toast.error("something went error");
     }
   };
 
@@ -99,7 +104,7 @@ const Checkout = ({ cartItems }: CheckoutProps) => {
                         onChange={(e) => handleChange(e)}
                         name="fullName"
                         type="text"
-                        value={form.fullName}
+                        value={form?.fullName}
                         placeholder="John Doe"
                         className="input input-bordered focus:input-primary"
                         required
