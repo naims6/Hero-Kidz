@@ -2,6 +2,7 @@
 
 import { authOptions } from "@/lib/authOptions";
 import { collections, dbConnect } from "@/lib/dbConnect";
+import { CartMongoType } from "@/types/CartMongoType";
 import { getServerSession } from "next-auth";
 
 const cartCollection = dbConnect(collections.CART);
@@ -30,7 +31,7 @@ export const handleCart = async ({ product, inc = true }: ProductProps) => {
     throw new Error("Unauthorized");
   }
   const user = session.user;
-  console.log("user is here :", user);
+
   const query = { email: user?.email, productId: product?._id };
 
   const isAdded = await cartCollection.findOne(query);
@@ -46,7 +47,7 @@ export const handleCart = async ({ product, inc = true }: ProductProps) => {
     const result = await cartCollection.updateOne(query, updatedData);
     return { success: !!result.modifiedCount };
   } else {
-    // if not exist
+    // if not exist create cart
     const newData = {
       productId: product?._id,
       email: user?.email,
@@ -58,4 +59,16 @@ export const handleCart = async ({ product, inc = true }: ProductProps) => {
     const result = await cartCollection.insertOne(newData);
     return { success: result.acknowledged };
   }
+};
+
+export const getCart = async () => {
+  const session = await getServerSession(authOptions);
+  if (!session?.user) {
+    throw new Error("Unauthorized");
+  }
+  const user = session.user;
+
+  const query = { email: user?.email };
+  const result = await cartCollection.find<CartMongoType>(query).toArray();
+  return result;
 };
