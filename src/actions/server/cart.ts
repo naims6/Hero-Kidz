@@ -5,7 +5,6 @@ import { collections, dbConnect } from "@/lib/dbConnect";
 import { CartMongoType } from "@/types/CartMongoType";
 import { ObjectId } from "mongodb";
 import { getServerSession } from "next-auth";
-import { revalidatePath } from "next/cache";
 import { cache } from "react";
 
 const cartCollection = dbConnect(collections.CART);
@@ -76,7 +75,9 @@ export const getCart = cache(async () => {
   return result;
 });
 
-export const deleteItemsFromCart = async (id: string):Promise<{ success: boolean; }> => {
+export const deleteItemsFromCart = async (
+  id: string
+): Promise<{ success: boolean }> => {
   const session = await getServerSession(authOptions);
   if (!session?.user) {
     throw new Error("Unauthorized");
@@ -93,4 +94,46 @@ export const deleteItemsFromCart = async (id: string):Promise<{ success: boolean
   return { success: !!result.deletedCount };
 };
 
+export const increaseCartItemDb = async (
+  id: string,
+  quantity: number
+): Promise<{ success: boolean; message?: string }> => {
+  const session = await getServerSession(authOptions);
+  if (!session?.user) {
+    throw new Error("Unauthorized");
+  }
+  if (quantity > 10) {
+    return { success: false, message: "You can't buy 10 products at a time" };
+  }
 
+  const query = { _id: new ObjectId(id) };
+  const updatedData = {
+    $inc: {
+      quantity: 1,
+    },
+  };
+  const result = await cartCollection.updateOne(query, updatedData);
+  return { success: !!result.modifiedCount };
+};
+
+export const decreaseCartItemDb = async (
+  id: string,
+  quantity: number
+): Promise<{ success: boolean; message?: string }> => {
+  const session = await getServerSession(authOptions);
+  if (!session?.user) {
+    throw new Error("Unauthorized");
+  }
+  if (quantity < 1) {
+    return { success: false, message: "You can't buy 10 products at a time" };
+  }
+
+  const query = { _id: new ObjectId(id) };
+  const updatedData = {
+    $inc: {
+      quantity: -1,
+    },
+  };
+  const result = await cartCollection.updateOne(query, updatedData);
+  return { success: !!result.modifiedCount };
+};

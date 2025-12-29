@@ -1,25 +1,24 @@
 "use client";
-import { deleteItemsFromCart } from "@/actions/server/cart";
+import {
+  decreaseCartItemDb,
+  deleteItemsFromCart,
+  increaseCartItemDb,
+} from "@/actions/server/cart";
 import { CartItemType } from "@/types/CartItemType";
 import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
 import { FaTrashAlt, FaPlus, FaMinus } from "react-icons/fa";
 
 interface CartItemProps {
   item: CartItemType;
   removeItem: (id: string) => void;
+  updateCart: (id: string, quantity: number) => void;
 }
 
+const CartItem = ({ item, removeItem, updateCart }: CartItemProps) => {
+  const [loading, setLoading] = useState(false);
 
-
-const CartItem = ({ item, removeItem }: CartItemProps ) => {
-  console.log("ITEM", item);
-  // --- Handlers ---
-  const updateQuantity = () => {
-    console.log("updating...");
-  };
-
-  const handleDeleteCart = async() => {
+  const handleDeleteCart = async () => {
     const result = confirm("Are you sure?");
     if (result) {
       const deleted = await deleteItemsFromCart(item._id);
@@ -29,6 +28,24 @@ const CartItem = ({ item, removeItem }: CartItemProps ) => {
     } else {
       alert("user cliked cancel");
     }
+  };
+
+  const handleIncreaseCart = async (id: string, quantity: number) => {
+    setLoading(true);
+    const result = await increaseCartItemDb(id, quantity);
+    if (result.success) {
+      updateCart(id, quantity);
+    }
+    setLoading(false);
+  };
+
+  const handleDecreaseCart = async (id: string, quantity: number) => {
+    setLoading(true);
+    const result = await decreaseCartItemDb(id, quantity);
+    if (result.success) {
+      updateCart(id, quantity);
+    }
+    setLoading(false);
   };
 
   return (
@@ -65,8 +82,9 @@ const CartItem = ({ item, removeItem }: CartItemProps ) => {
           {/* Quantity Controller */}
           <div className="join border border-base-300 bg-base-100">
             <button
-              onClick={() => updateQuantity()}
+              onClick={() => handleDecreaseCart(item._id, item.quantity - 1)}
               className="btn btn-ghost join-item btn-sm"
+              disabled={item.quantity === 1 || loading}
             >
               <FaMinus size={12} />
             </button>
@@ -74,8 +92,9 @@ const CartItem = ({ item, removeItem }: CartItemProps ) => {
               {item.quantity}
             </span>
             <button
-              onClick={() => updateQuantity()}
+              onClick={() => handleIncreaseCart(item._id, item.quantity + 1)}
               className="btn btn-ghost join-item btn-sm"
+              disabled={item.quantity === 10 || loading}
             >
               <FaPlus size={12} />
             </button>

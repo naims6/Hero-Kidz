@@ -14,17 +14,22 @@ const Cart = ({ cartItems }: CartProps) => {
   const [items, setItems] = useState<CartItemType[]>(cartItems);
 
   // --- Calculations ---
-  const subtotal = useMemo(() => items.reduce(
-    (acc, item) => acc + item.price * item.quantity,
-    0
-  ), [items])
+  const subtotal = useMemo(
+    () => items.reduce((acc, item) => acc + item.price * item.quantity, 0),
+    [items]
+  );
   const shipping = items.length > 0 ? 60 : 0;
   const total = subtotal + shipping;
 
   const removeItem = (id: string) => {
-  setItems(prev => prev.filter(item => item._id !== id));
-};
+    setItems((prev) => prev.filter((item) => item._id !== id));
+  };
 
+  const updateCart = (id: string, q: number) => {
+    setItems((prev) =>
+      prev.map((item) => (item._id === id ? { ...item, quantity: q } : item))
+    );
+  };
 
   return (
     <div>
@@ -33,7 +38,12 @@ const Cart = ({ cartItems }: CartProps) => {
           {/* Left Side: Product List */}
           <div className="lg:col-span-2 space-y-4">
             {items.map((item) => (
-              <CartItem key={item._id} item={item} removeItem={removeItem}/>
+              <CartItem
+                key={item._id}
+                item={item}
+                removeItem={removeItem}
+                updateCart={updateCart}
+              />
             ))}
 
             <Link href="/" className="btn btn-ghost gap-2 mt-4">
@@ -69,9 +79,12 @@ const Cart = ({ cartItems }: CartProps) => {
                   </div>
                 </div>
 
-                <button className="btn btn-primary w-full mt-6 text-white text-lg">
+                <Link
+                  href={"/checkout"}
+                  className="btn btn-primary w-full mt-6 text-white text-lg"
+                >
                   Proceed to Checkout
-                </button>
+                </Link>
 
                 <div className="mt-4 flex items-center justify-center gap-2 grayscale opacity-50">
                   <Image

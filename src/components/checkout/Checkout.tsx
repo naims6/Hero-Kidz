@@ -1,0 +1,169 @@
+"use client";
+import { CartItemType } from "@/types/CartItemType";
+import Image from "next/image";
+import { FaShieldAlt, FaTruck, FaCreditCard, FaLock, FaMapMarkerAlt } from "react-icons/fa";
+// import { SiBkash, SiNagad } from "react-icons/si"; 
+interface CheckoutProps {
+  cartItems: CartItemType[];
+}
+
+const Checkout = ({cartItems}: CheckoutProps) => {
+  return (
+    <div className="min-h-screen bg-base-200 py-10 px-4">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+          <h1 className="text-3xl font-extrabold flex items-center gap-3">
+            Secure Checkout <FaShieldAlt className="text-success" />
+          </h1>
+          <div className="flex items-center gap-2 text-sm text-gray-500 bg-base-100 px-4 py-2 rounded-full shadow-sm">
+            <FaLock className="text-success" /> SSL Encrypted & Secure
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          
+          {/* Left Side: Forms */}
+          <div className="lg:col-span-2 space-y-6">
+            
+            {/* 1. Shipping Information */}
+            <div className="card bg-base-100 shadow-sm border border-base-300">
+              <div className="card-body">
+                <h2 className="card-title flex items-center gap-2 mb-4">
+                  <FaMapMarkerAlt className="text-primary" /> Shipping Information
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="form-control">
+                    <label className="label"><span className="label-text font-semibold">Full Name</span></label>
+                    <input type="text" placeholder="John Doe" className="input input-bordered focus:input-primary" required />
+                  </div>
+                  <div className="form-control">
+                    <label className="label"><span className="label-text font-semibold">Phone Number</span></label>
+                    <input type="tel" placeholder="017XXXXXXXX" className="input input-bordered focus:input-primary" required />
+                  </div>
+                  <div className="form-control md:col-span-2">
+                    <label className="label"><span className="label-text font-semibold">Street Address</span></label>
+                    <textarea className="textarea textarea-bordered h-24" placeholder="House no, Road no, Area..."></textarea>
+                  </div>
+                  <div className="form-control">
+                    <label className="label"><span className="label-text font-semibold">City</span></label>
+                    <select className="select select-bordered w-full">
+                      <option disabled selected>Select City</option>
+                      <option>Dhaka</option>
+                      <option>Chittagong</option>
+                      <option>Sylhet</option>
+                    </select>
+                  </div>
+                  <div className="form-control">
+                    <label className="label"><span className="label-text font-semibold">Postal Code</span></label>
+                    <input type="text" placeholder="1212" className="input input-bordered" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 2. Delivery Method */}
+            <div className="card bg-base-100 shadow-sm border border-base-300">
+              <div className="card-body">
+                <h2 className="card-title flex items-center gap-2 mb-4">
+                  <FaTruck className="text-primary" /> Delivery Method
+                </h2>
+                <div className="form-control">
+                  <label className="label cursor-pointer border rounded-xl p-4 hover:bg-base-200 transition-colors">
+                    <div className="flex items-center gap-4">
+                      <input type="radio" name="delivery" className="radio radio-primary" checked />
+                      <div>
+                        <span className="font-bold block">Standard Delivery</span>
+                        <span className="text-sm text-gray-500">2-3 Business Days</span>
+                      </div>
+                    </div>
+                    <span className="font-bold">৳60</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            {/* 3. Payment Method */}
+            <div className="card bg-base-100 shadow-sm border border-base-300">
+              <div className="card-body">
+                <h2 className="card-title flex items-center gap-2 mb-4">
+                  <FaCreditCard className="text-primary" /> Payment Method
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <button className="btn btn-outline h-20 flex flex-col gap-1 border-2 border-primary bg-primary/5">
+                    <span className="font-bold">Cash on Delivery</span>
+                    <span className="text-[10px] opacity-70">Pay when you receive</span>
+                  </button>
+                  <button className="btn btn-outline h-20 flex flex-col gap-1 hover:border-pink-500 hover:bg-pink-50">
+                    <span className="text-pink-600 font-bold">bKash</span>
+                    <span className="text-[10px] opacity-70">Online Payment</span>
+                  </button>
+                  <button className="btn btn-outline h-20 flex flex-col gap-1 hover:border-orange-500 hover:bg-orange-50">
+                    <span className="text-orange-600 font-bold">Nagad</span>
+                    <span className="text-[10px] opacity-70">Online Payment</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Side: Order Summary */}
+          <div className="lg:col-span-1">
+            <div className="card bg-base-100 shadow-xl border border-base-300 sticky top-10">
+              <div className="card-body">
+                <h3 className="text-xl font-bold border-b pb-4">Your Order</h3>
+                
+                {/* Mini Product List */}
+                <div className="space-y-4 py-4 max-h-60 overflow-y-auto">
+                  <div className="flex gap-3">
+                    <div className="avatar">
+                      <div className="w-12 h-12 rounded-lg">
+                        <Image width={100} height={100} src="https://i.ibb.co.com/203h05Sq/image.png" alt="Product" />
+                      </div>
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-sm font-bold line-clamp-1">Doctor Costume Set</h4>
+                      <p className="text-xs text-gray-500">Qty: 2 × ৳1,276</p>
+                    </div>
+                    <p className="text-sm font-bold">৳2,552</p>
+                  </div>
+                </div>
+
+                <div className="divider opacity-50"></div>
+
+                {/* Totals */}
+                <div className="space-y-3">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500">Subtotal</span>
+                    <span>৳2,552</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500">Shipping</span>
+                    <span>৳60</span>
+                  </div>
+                  <div className="divider"></div>
+                  <div className="flex justify-between text-lg font-extrabold">
+                    <span>Grand Total</span>
+                    <span className="text-primary">৳2,612</span>
+                  </div>
+                </div>
+
+                {/* Submit Button */}
+                <button className="btn btn-primary w-full mt-8 text-white text-lg shadow-lg shadow-primary/30">
+                  Complete Order
+                </button>
+
+                <p className="text-[11px] text-center text-gray-400 mt-4 italic">
+                  By clicking &quot;Complete Order&quot;, you agree to our Terms of Service and Privacy Policy.
+                </p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Checkout;
