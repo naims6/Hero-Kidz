@@ -35,7 +35,7 @@ const CartButton = ({ product }: ProductProps) => {
   const add2Cart = async () => {
     setLoading(true);
     if (isLogin) {
-      const result = await handleCart({ product, inc: true });
+      const result = await handleCart({ product });
       if (result.success) {
         toast.success(`${product.title} added succesfulsly`);
         setLoading(false);

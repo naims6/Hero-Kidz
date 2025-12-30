@@ -24,10 +24,9 @@ interface ProductProps {
     description?: string;
     percentage?: number; // Added this since it's in your JSON
   };
-  inc: boolean;
 }
 
-export const handleCart = async ({ product, inc = true }: ProductProps) => {
+export const handleCart = async ({ product }: ProductProps) => {
   const session = await getServerSession(authOptions);
   if (!session?.user) {
     throw new Error("Unauthorized");
@@ -39,10 +38,10 @@ export const handleCart = async ({ product, inc = true }: ProductProps) => {
   const isAdded = await cartCollection.findOne(query);
 
   if (isAdded) {
-    // if exist : upadte cart
+    // if exist : update cart
     const updatedData = {
       $inc: {
-        quantity: inc ? 1 : -1,
+        quantity: 1,
       },
     };
 
@@ -83,7 +82,6 @@ export const deleteItemsFromCart = async (
     throw new Error("Unauthorized");
   }
   const user = session.user;
-  console.log("USER FROM Delete cart", user);
   const query = { _id: new ObjectId(id), email: user.email };
 
   const result = await cartCollection.deleteOne(query);
