@@ -4,7 +4,7 @@ import { CartItemType } from "@/types/CartItemType";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, FormEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import {
   FaShieldAlt,
@@ -19,7 +19,7 @@ interface CheckoutProps {
 }
 
 const Checkout = ({ cartItems }: CheckoutProps) => {
-  const { data } = useSession();
+  const { data, status } = useSession();
   const router = useRouter();
   console.log(data);
   console.log("checkout cartitems length:", cartItems.length);
@@ -68,6 +68,21 @@ const Checkout = ({ cartItems }: CheckoutProps) => {
       toast.error("something went error");
     }
   };
+
+  useEffect(() => {
+    if (status === "authenticated" && data?.user?.name) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setForm((prev) => ({ ...prev, fullName: data.user.name as string }));
+    }
+  }, [data, status]);
+
+  if (status === "loading") {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Loading...,
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-base-200 py-10 px-4">
