@@ -21,7 +21,8 @@ interface CheckoutProps {
 const Checkout = ({ cartItems }: CheckoutProps) => {
   const { data, status } = useSession();
   const router = useRouter();
-  console.log(data);
+  const [loading, setLoading] = useState(false)
+
   console.log("checkout cartitems length:", cartItems.length);
   const [form, setForm] = useState({
     fullName: data?.user?.name ?? "",
@@ -60,6 +61,7 @@ const Checkout = ({ cartItems }: CheckoutProps) => {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true)
     const result = await createOrder(form);
     if (result.success) {
       toast.success("Order confirmed");
@@ -67,6 +69,7 @@ const Checkout = ({ cartItems }: CheckoutProps) => {
     } else {
       toast.error("something went error");
     }
+    setLoading(false)
   };
 
   useEffect(() => {
@@ -252,7 +255,7 @@ const Checkout = ({ cartItems }: CheckoutProps) => {
                   </div>
                 </div>
               </div>
-              <button className="btn btn-primary w-full mt-8">Checkout</button>
+              <button disabled={loading} className="btn btn-primary w-full mt-8">Checkout</button>
             </form>
           </div>
 
